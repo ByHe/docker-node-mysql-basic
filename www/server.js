@@ -17,10 +17,7 @@ app.use(express.json());
 
 // Startsidan
 app.get('/', (req, res) => {
-  res.render('index', {
-    title: 'Node.js & EJS - Webbserverprogrammering 1',
-    nodeVersion: process.version
-  });
+  res.render('index');
 });
 
 // Starta servern

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>🚀 Node.js, Express & EJS</h1>
+      <p class="subtitle">Utvecklingsmiljö för Webbserverprogrammering 1</p>
+    </header>
+
+    <section class="status-grid">
+      <!-- Status: Webbserver -->
+      <div class="card status-card ok">
+        <div class="card-icon">⚡</div>
+        <div class="card-content">
+          <h3>Webbserver: Igång</h3>
+          <p><strong>Node.js:</strong> <%= nodeVersion %></p>
+          <p><strong>Motor:</strong> Express & EJS</p>
+          <span class="badge badge-success">Aktiv</span>
+        </div>
+      </div>
+
+      <!-- Status: Databas -->
+      <div class="card status-card <%= dbStatus.ok ? 'ok' : 'pending' %>">
+        <div class="card-icon">🗄️</div>
+        <div class="card-content">
+          <h3>MariaDB: <%= dbStatus.ok ? 'Ansluten' : 'Väntar...' %></h3>
+          <% if (dbStatus.ok) { %>
+            <p><strong>Version:</strong> <%= dbStatus.version %></p>
+            <p><strong>Databas:</strong> <code><%= dbStatus.currentDb %></code> (användare: <code><%= dbStatus.user %></code>)</p>
+            <span class="badge badge-success">Klar att använda</span>
+          <% } else { %>
+            <p class="error-text">Kunde inte ansluta ännu: <%= dbStatus.message %></p>
+            <p><small>Uppdatera sidan om databasen nyss startades.</small></p>
+            <span class="badge badge-warning">Startar</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Status: phpMyAdmin -->
+      <div class="card status-card info">
+        <div class="card-icon">🐬</div>
+        <div class="card-content">
+          <h3>phpMyAdmin</h3>
+          <p>Hantera databaser, tabeller och kör SQL visuellt.</p>
+          <a href="http://localhost:8080" target="_blank" class="btn btn-primary">Öppna phpMyAdmin (port 8080) &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Snabbguide: PHP till EJS -->
+    <section class="card guide-card">
+      <h2>💡 Från PHP till EJS i Webbserverprogrammering</h2>
+      <p>EJS fungerar precis som PHP-taggar inuti din HTML, men med JavaScript:</p>
+      
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Beskrivning</th>
+            <th>Gammal PHP-syntax</th>
+            <th>Ny EJS-syntax</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Skriv ut variabel</strong></td>
+            <td><code>&lt;?= $namn ?&gt;</code></td>
+            <td><code>&lt;%= namn %&gt;</code></td>
+          </tr>
+          <tr>
+            <td><strong>Villkor (if)</strong></td>
+            <td><code>&lt;?php if ($inloggad) { ?&gt;</code></td>
+            <td><code>&lt;% if (inloggad) { %&gt;</code></td>
+          </tr>
+          <tr>
+            <td><strong>Loop (forEach)</strong></td>
+            <td><code>&lt;?php foreach ($rader as $rad): ?&gt;</code></td>
+            <td><code>&lt;% rader.forEach(rad =&gt; { %&gt;</code></td>
+          </tr>
+          <tr>
+            <td><strong>Avsluta block</strong></td>
+            <td><code>&lt;?php } ?&gt;</code></td>
+            <td><code>&lt;% } %&gt;</code></td>
+          </tr>
+          <tr>
+            <td><strong>Inkludera delmall</strong></td>
+            <td><code>&lt;?php include 'header.php'; ?&gt;</code></td>
+            <td><code>&lt;%- include('partials/header') %&gt;</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Mappstruktur -->
+    <section class="card structure-card">
+      <h2>📁 Så fungerar dina mappar</h2>
+      <ul class="file-list">
+        <li>
+          <code>server.js</code> &mdash; Serverns hjärna. Här skapar du rutter (<code>app.get</code>, <code>app.post</code>) och hämtar data från databasen.
+        </li>
+        <li>
+          <code>views/</code> &mdash; Dina EJS-mallar (motsvarar dina gamla <code>.php</code>-filer). Servern renderar dem med <code>res.render()</code>.
+        </li>
+        <li>
+          <code>public/</code> &mdash; Statiska filer som webbläsaren kan hämta direkt (t.ex. <code>/css/style.css</code>, bilder, klient-JS).
+        </li>
+        <li>
+          <code>db/</code> &mdash; Lägg valfria <code>.sql</code>-filer här så körs de automatiskt när databasen skapas.
+        </li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      <p>Körs i Docker &bull; Auto-reload med Nodemon aktivt &bull; Spara dina ändringar och uppdatera webbläsaren!</p>
+    </footer>
+  </div>
+</body>
+</html>

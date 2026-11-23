@@ -1,0 +1,10 @@
+{
+  "watch": [
+    "server.js",
+    "views",
+    "public"
+  ],
+  "ext": "js,json,ejs,html,css",
+  "legacyWatch": true,
+  "delay": 200
+}

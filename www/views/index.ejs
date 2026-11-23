@@ -20,25 +20,8 @@
         <div class="card-content">
           <h3>Webbserver: Igång</h3>
           <p><strong>Node.js:</strong> <%= nodeVersion %></p>
-          <p><strong>Motor:</strong> Express & EJS</p>
+          <p><strong>Motor:</strong> Express & EJS (ES Modules)</p>
           <span class="badge badge-success">Aktiv</span>
-        </div>
-      </div>
-
-      <!-- Status: Databas -->
-      <div class="card status-card <%= dbStatus.ok ? 'ok' : 'pending' %>">
-        <div class="card-icon">🗄️</div>
-        <div class="card-content">
-          <h3>MariaDB: <%= dbStatus.ok ? 'Ansluten' : 'Väntar...' %></h3>
-          <% if (dbStatus.ok) { %>
-            <p><strong>Version:</strong> <%= dbStatus.version %></p>
-            <p><strong>Databas:</strong> <code><%= dbStatus.currentDb %></code> (användare: <code><%= dbStatus.user %></code>)</p>
-            <span class="badge badge-success">Klar att använda</span>
-          <% } else { %>
-            <p class="error-text">Kunde inte ansluta ännu: <%= dbStatus.message %></p>
-            <p><small>Uppdatera sidan om databasen nyss startades.</small></p>
-            <span class="badge badge-warning">Startar</span>
-          <% } %>
         </div>
       </div>
 
@@ -101,7 +84,7 @@
       <h2>📁 Så fungerar dina mappar</h2>
       <ul class="file-list">
         <li>
-          <code>server.js</code> &mdash; Serverns hjärna. Här skapar du rutter (<code>app.get</code>, <code>app.post</code>) och hämtar data från databasen.
+          <code>server.js</code> &mdash; Serverns hjärna. Här skriver du rutter (<code>app.get</code>, <code>app.post</code>) med modern <code>import</code>-syntax.
         </li>
         <li>
           <code>views/</code> &mdash; Dina EJS-mallar (motsvarar dina gamla <code>.php</code>-filer). Servern renderar dem med <code>res.render()</code>.
@@ -110,7 +93,7 @@
           <code>public/</code> &mdash; Statiska filer som webbläsaren kan hämta direkt (t.ex. <code>/css/style.css</code>, bilder, klient-JS).
         </li>
         <li>
-          <code>db/</code> &mdash; Lägg valfria <code>.sql</code>-filer här så körs de automatiskt när databasen skapas.
+          <code>db/</code> &mdash; SQL-filer för databasen (används senare i kursen).
         </li>
       </ul>
     </section>

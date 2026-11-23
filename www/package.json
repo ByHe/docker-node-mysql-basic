@@ -2,6 +2,7 @@
   "name": "webbserverprogrammering-1",
   "version": "1.0.0",
   "description": "Grundläggande webbserverprogrammering med Node.js, Express, EJS och MariaDB",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -4,7 +4,7 @@
     "views",
     "public"
   ],
-  "ext": "js,json,ejs,html,css",
+  "ext": "js,mjs,json,ejs,html,css",
   "legacyWatch": true,
   "delay": 200
 }

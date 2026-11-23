@@ -2,7 +2,7 @@
 
 En enkel, ren och modern utvecklingsmiljö anpassad för kursen **Webbserverprogrammering 1**.
 
-Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna ren JavaScript hela vägen från backend till frontend, samtidigt som den välbekanta strukturen med webbserver, databas och phpMyAdmin behålls.
+Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna ren JavaScript hela vägen från backend till frontend, med modern **ES Modules (`import`)**-syntax.
 
 ---
 
@@ -12,7 +12,7 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
 | :--- | :--- | :--- |
 | **Node.js & Express** | `http://localhost` (port 80) | Backend-server som kör din JavaScript-kod och renderar EJS-sidor. |
 | **phpMyAdmin** | `http://localhost:8080` | Grafiskt webbgränssnitt för att skapa och hantera databaser och tabeller. |
-| **MariaDB** | `db:3306` (internt) | Relationsdatabas för lagring av data. |
+| **MariaDB** | `db:3306` (internt) | Relationsdatabas för lagring av data (används senare i kursen). |
 
 ---
 
@@ -26,7 +26,7 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
    *(Första gången installeras nödvändiga npm-paket automatiskt i containern via `npm install`)*
 
 2. **Besök webbplatsen:**
-   Öppna [http://localhost](http://localhost) i din webbläsare. Du möts av testsidan som visar att Node.js körs och att MariaDB är ansluten som `root`.
+   Öppna [http://localhost](http://localhost) i din webbläsare. Du möts av testsidan som visar att Node.js och Express körs.
 
 3. **Hantera databasen med phpMyAdmin:**
    Öppna [http://localhost:8080](http://localhost:8080) i din webbläsare.
@@ -49,9 +49,9 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
 ├── db/
 │   └── init.sql         # SQL-skript som körs automatiskt vid första databasstarten
 └── www/
-    ├── package.json     # Node-beroenden (Express, EJS, mysql2, nodemon)
+    ├── package.json     # Node-beroenden och "type": "module" för import-syntax
     ├── nodemon.json     # Konfiguration för automatisk omstart vid sparande
-    ├── server.js        # Webbserverns huvudfil och rutter
+    ├── server.js        # Webbserverns huvudfil och rutter (ren och minimalistisk)
     ├── public/          # Statiska filer (CSS, bilder, klient-JS)
     │   ├── css/style.css
     │   └── js/main.js
@@ -60,7 +60,7 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
 ```
 
 ### Vad ska ligga var?
-* **`www/server.js`:** Här skriver du din backend-logik, skapar rutter (`app.get`, `app.post`) och hanterar databasfrågor.
+* **`www/server.js`:** Här skriver du din backend-logik och skapar rutter (`app.get`, `app.post`) med modern `import`-syntax.
 * **`www/views/`:** Här sparar du dina `.ejs`-filer. De renderas på servern med `res.render('sidnamn', data)` och skickas som färdig HTML till användaren.
 * **`www/public/`:** Filer som webbläsaren kan hämta direkt, t.ex. stilmallar (`/css/style.css`), bilder (`/bilder/logo.png`) och skript (`/js/main.js`).
 
@@ -92,11 +92,20 @@ EJS är valt för att syntaxen är mycket lik den klassiska PHP-syntaxen:
 
 ---
 
-## 🗄️ Exempel: Hämta data från MariaDB
+## 🗄️ Senare i kursen: Ansluta till MariaDB
 
-I `server.js` finns redan en anslutningspool (`pool`). Så här enkelt hämtar du rader i en rutt:
+När ni når databasmomenten importerar du bara `mysql2/promise` i `server.js`:
 
 ```javascript
+import mysql from 'mysql2/promise';
+
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'db',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '12345',
+  database: process.env.DB_NAME || 'webbserver_db'
+});
+
 app.get('/besokare', async (req, res) => {
   try {
     const [rader] = await pool.query('SELECT * FROM besokare');
@@ -105,16 +114,6 @@ app.get('/besokare', async (req, res) => {
     res.status(500).send('Databasfel: ' + err.message);
   }
 });
-```
-
-I `views/besokare.ejs`:
-```html
-<h1>Besökslista</h1>
-<ul>
-  <% besokare.forEach(b => { %>
-    <li><strong><%= b.namn %>:</strong> <%= b.meddelande %></li>
-  <% }); %>
-</ul>
 ```
 
 ---
@@ -138,4 +137,3 @@ I `views/besokare.ejs`:
   docker compose down -v
   docker compose up -d
   ```
-  *Flaggan `-v` raderar den gamla databasvolymen så att en helt ren skapas.*

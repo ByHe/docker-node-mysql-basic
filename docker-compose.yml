@@ -2,7 +2,8 @@ services:
   node-server:
     image: node:lts-alpine
     container_name: node-server
-    restart: unless-stopped
+    # restart: always        # I produktion: startar alltid om automatiskt om servern kraschar eller rebootas
+    restart: "no"            # I utbildning: startar INTE containern automatiskt när eleven startar datorn
     working_dir: /app
     volumes:
       - ./www:/app:z
@@ -22,7 +23,8 @@ services:
   mariadb:
     image: mariadb:latest
     container_name: mariadb
-    restart: unless-stopped
+    # restart: always        # I produktion: databasen ska alltid starta automatiskt vid systemstart
+    restart: "no"            # I utbildning: startar inte vid datorstart för att spara batteri/resurser
     volumes:
       - ./db:/var/lib/mysql:z
     environment:
@@ -35,7 +37,8 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: pma
-    restart: unless-stopped
+    # restart: always        # I produktion
+    restart: "no"            # I utbildning
     environment:
       PMA_HOST: mariadb
       TZ: Europe/Stockholm

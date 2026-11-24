@@ -10,7 +10,7 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
 
 | Tjänst | Container | Adress i webbläsaren | Beskrivning |
 | :--- | :--- | :--- | :--- |
-| **Node.js & Express** | `server` | `http://localhost` (port 80) | Backend-server som kör din JavaScript-kod och renderar EJS-sidor. |
+| **Node.js & Express** | `node-server` | `http://localhost` (port 80) | Backend-server som kör din JavaScript-kod och renderar EJS-sidor. |
 | **phpMyAdmin** | `pma` | `http://localhost:8080` | Grafiskt webbgränssnitt för att skapa och hantera databaser och tabeller. |
 | **MariaDB** | `mariadb` | `mariadb:3306` (internt) | Relationsdatabas för lagring av data. Lagras direkt i mappen `db/`. |
 
@@ -44,7 +44,7 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
 ## 📁 Mappstruktur
 
 ```text
-├── docker-compose.yml   # Definierar containrarna (server, mariadb, pma)
+├── docker-compose.yml   # Definierar containrarna (node-server, mariadb, pma)
 ├── .env                 # Inställningar, portar och databaslösenord
 ├── db/                  # Databasens filer sparas här (följer med projektet)
 └── www/
@@ -72,7 +72,7 @@ Servern körs med **Nodemon**. Så fort du sparar en fil (`server.js` eller i `v
 
 * **Se serverns loggar i realtid:**
   ```bash
-  docker compose logs -f server
+  docker compose logs -f node-server
   ```
   *(Tryck `Ctrl+C` för att avsluta loggläsaren)*
 
@@ -132,4 +132,4 @@ app.get('/besokare', async (req, res) => {
   Då når du webbservern på `http://localhost:3000` och phpMyAdmin på `http://localhost:8081`.
 
 * **Återanvändning av containrar:**
-  Eftersom containrarna har fasta namn (`server`, `mariadb`, `pma`) skapas inga onödiga containrar på datorn. När du byter till en annan uppgift kör du bara `docker compose down` i den gamla och `docker compose up -d` i den nya.
+  Eftersom containrarna har fasta namn (`node-server`, `mariadb`, `pma`) skapas inga onödiga containrar på datorn. När du byter till en annan uppgift kör du bara `docker compose down` i den gamla och `docker compose up -d` i den nya.

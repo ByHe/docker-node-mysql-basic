@@ -1,9 +1,11 @@
 services:
-  web:
-    image: node:22-alpine
+  node-server:
+    image: node:lts-alpine
+    container_name: node-server
+    restart: unless-stopped
     working_dir: /app
     volumes:
-      - ./www:/app
+      - ./www:/app:z
     ports:
       - "${PORT:-80}:3000"
     env_file:
@@ -11,32 +13,39 @@ services:
         required: false
     command: sh -c "npm install && npm run dev"
     depends_on:
-      - db
+      - mariadb
     environment:
       - TZ=Europe/Stockholm
+    networks:
+      - app-network
 
-  db:
-    image: mariadb:11
-    restart: always
-    environment:
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-12345}
-      MARIADB_DATABASE: ${DB_NAME:-webbserver_db}
-      TZ: Europe/Stockholm
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: unless-stopped
     volumes:
-      - db_data:/var/lib/mysql
-      - ./db:/docker-entrypoint-initdb.d:ro
+      - ./db:/var/lib/mysql:z
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-12345}
+      MYSQL_DATABASE: ${DB_NAME:-webbserver_db}
+      TZ: Europe/Stockholm
+    networks:
+      - app-network
 
   phpmyadmin:
     image: phpmyadmin:latest
-    restart: always
+    container_name: pma
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mariadb
+      TZ: Europe/Stockholm
     ports:
       - "${PMA_PORT:-8080}:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-12345}
-      TZ: Europe/Stockholm
     depends_on:
-      - db
+      - mariadb
+    networks:
+      - app-network
 
-volumes:
-  db_data:
+networks:
+  app-network:
+    driver: bridge

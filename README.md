@@ -2,17 +2,17 @@
 
 En enkel, ren och modern utvecklingsmiljö anpassad för kursen **Webbserverprogrammering 1**.
 
-Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna ren JavaScript hela vägen från backend till frontend, med modern **ES Modules (`import`)**-syntax.
+Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna ren JavaScript hela vägen från backend till frontend med modern **ES Modules (`import`)**-syntax, samtidigt som den välbekanta strukturen med server, databas i projektmappen och phpMyAdmin behålls.
 
 ---
 
 ## 📦 Vad ingår i miljön?
 
-| Tjänst | Adress i webbläsaren | Beskrivning |
-| :--- | :--- | :--- |
-| **Node.js & Express** | `http://localhost` (port 80) | Backend-server som kör din JavaScript-kod och renderar EJS-sidor. |
-| **phpMyAdmin** | `http://localhost:8080` | Grafiskt webbgränssnitt för att skapa och hantera databaser och tabeller. |
-| **MariaDB** | `db:3306` (internt) | Relationsdatabas för lagring av data (används senare i kursen). |
+| Tjänst | Container | Adress i webbläsaren | Beskrivning |
+| :--- | :--- | :--- | :--- |
+| **Node.js & Express** | `server` | `http://localhost` (port 80) | Backend-server som kör din JavaScript-kod och renderar EJS-sidor. |
+| **phpMyAdmin** | `pma` | `http://localhost:8080` | Grafiskt webbgränssnitt för att skapa och hantera databaser och tabeller. |
+| **MariaDB** | `mariadb` | `mariadb:3306` (internt) | Relationsdatabas för lagring av data. Lagras direkt i mappen `db/`. |
 
 ---
 
@@ -32,9 +32,9 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
    Öppna [http://localhost:8080](http://localhost:8080) i din webbläsare.
    * **Användarnamn:** `root`
    * **Lösenord:** `12345`
-   * **Server:** `db`
+   * **Server:** `mariadb`
 
-4. **Stoppa miljön när du är klar för dagen:**
+4. **Stoppa miljön när du är klar för dagen eller byter uppgift:**
    ```bash
    docker compose down
    ```
@@ -44,10 +44,9 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
 ## 📁 Mappstruktur
 
 ```text
-├── docker-compose.yml   # Definierar containrarna (Node, MariaDB, phpMyAdmin)
+├── docker-compose.yml   # Definierar containrarna (server, mariadb, pma)
 ├── .env                 # Inställningar, portar och databaslösenord
-├── db/
-│   └── init.sql         # SQL-skript som körs automatiskt vid första databasstarten
+├── db/                  # Databasens filer sparas här (följer med projektet)
 └── www/
     ├── package.json     # Node-beroenden och "type": "module" för import-syntax
     ├── nodemon.json     # Konfiguration för automatisk omstart vid sparande
@@ -61,8 +60,9 @@ Denna miljö ersätter den tidigare LEMP-miljön (PHP/Nginx) och ger eleverna re
 
 ### Vad ska ligga var?
 * **`www/server.js`:** Här skriver du din backend-logik och skapar rutter (`app.get`, `app.post`) med modern `import`-syntax.
-* **`www/views/`:** Här sparar du dina `.ejs`-filer. De renderas på servern med `res.render('sidnamn', data)` och skickas som färdig HTML till användaren.
+* **`www/views/`:** Här sparar du dina `.ejs`-filer. De renderas på servern med `res.render('sidnamn')` och skickas som färdig HTML till användaren.
 * **`www/public/`:** Filer som webbläsaren kan hämta direkt, t.ex. stilmallar (`/css/style.css`), bilder (`/bilder/logo.png`) och skript (`/js/main.js`).
+* **`db/`:** MariaDB sparar all databasdata direkt i den här mappen. Om du zippar projektmappen följer hela databasen med!
 
 ---
 
@@ -72,7 +72,7 @@ Servern körs med **Nodemon**. Så fort du sparar en fil (`server.js` eller i `v
 
 * **Se serverns loggar i realtid:**
   ```bash
-  docker compose logs -f web
+  docker compose logs -f server
   ```
   *(Tryck `Ctrl+C` för att avsluta loggläsaren)*
 
@@ -100,7 +100,7 @@ När ni når databasmomenten importerar du bara `mysql2/promise` i `server.js`:
 import mysql from 'mysql2/promise';
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'db',
+  host: process.env.DB_HOST || 'mariadb',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '12345',
   database: process.env.DB_NAME || 'webbserver_db'
@@ -121,7 +121,7 @@ app.get('/besokare', async (req, res) => {
 ## 🛠️ Felsökning & vanliga frågor
 
 * **Logga in i databasen:**
-  Använd alltid `root` som användare och `12345` som lösenord.
+  Använd alltid `root` som användare, `12345` som lösenord och `mariadb` som server/värdnamn.
 
 * **Port 80 eller 8080 är upptagen på min dator:**
   Öppna filen `.env` och ändra:
@@ -131,9 +131,5 @@ app.get('/besokare', async (req, res) => {
   ```
   Då når du webbservern på `http://localhost:3000` och phpMyAdmin på `http://localhost:8081`.
 
-* **Nollställa databasen från grunden:**
-  Om du vill återställa databasen och köra `db/init.sql` på nytt:
-  ```bash
-  docker compose down -v
-  docker compose up -d
-  ```
+* **Återanvändning av containrar:**
+  Eftersom containrarna har fasta namn (`server`, `mariadb`, `pma`) skapas inga onödiga containrar på datorn. När du byter till en annan uppgift kör du bara `docker compose down` i den gamla och `docker compose up -d` i den nya.
